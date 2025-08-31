@@ -12,26 +12,32 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth";
+import { useNotify } from "@/components/notifications/notifications";
 
 export default function ForgotPasswordPage() {
   const sendResetPassword = useAuthStore((s) => s.sendResetPassword);
   const [email, setEmail] = useState("");
-  const [msg, setMsg] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const notify = useNotify();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMsg(null);
-    setError(null);
     setLoading(true);
     const res = await sendResetPassword(email);
     setLoading(false);
     if (!res.ok) {
-      setError(res.error || "Failed to send reset email");
+      notify({
+        title: "Reset failed",
+        description: res.error || "Failed to send reset email",
+        variant: "error",
+      });
       return;
     }
-    setMsg("Password reset link sent. Check your email.");
+    notify({
+      title: "Email sent",
+      description: "Password reset link sent. Check your inbox.",
+      variant: "success",
+    });
   }
 
   return (
@@ -56,12 +62,6 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              {error ? (
-                <p className="text-sm text-destructive">{error}</p>
-              ) : null}
-              {msg ? (
-                <p className="text-sm text-muted-foreground">{msg}</p>
-              ) : null}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Sending..." : "Send reset email"}
               </Button>

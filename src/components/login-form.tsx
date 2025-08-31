@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/auth";
+import { useNotify } from "@/components/notifications/notifications";
 
 export function LoginForm({
   className,
@@ -32,6 +33,7 @@ export function LoginForm({
   const [pwLoading, setPwLoading] = useState(false);
   const [magicLoading, setMagicLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const notify = useNotify();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,9 +43,16 @@ export function LoginForm({
     const res = await signInWithPassword(email, password);
     setPwLoading(false);
     if (!res.ok) {
-      setError(res.error ?? "Login failed");
+      const msg = res.error ?? "Login failed";
+      setError(msg);
+      notify({ title: "Login failed", description: msg, variant: "error" });
       return;
     }
+    notify({
+      title: "Welcome back",
+      description: "You are now logged in.",
+      variant: "success",
+    });
     router.replace("/");
   }
   async function onSendMagic() {
@@ -53,10 +62,20 @@ export function LoginForm({
     const res = await signInWithMagicLink(email);
     setMagicLoading(false);
     if (!res.ok) {
-      setError(res.error ?? "Failed to send magic link");
+      const msg = res.error ?? "Failed to send magic link";
+      setError(msg);
+      notify({
+        title: "Could not send magic link",
+        description: msg,
+        variant: "error",
+      });
       return;
     }
-    setInfo("Magic link sent. Check your email to log in.");
+    notify({
+      title: "Magic link sent",
+      description: "Check your email to log in.",
+      variant: "info",
+    });
   }
   async function onGoogle() {
     try {
@@ -106,11 +125,7 @@ export function LoginForm({
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                {error || storeError ? (
-                  <p className="text-sm text-destructive">
-                    {error || storeError}
-                  </p>
-                ) : null}
+                {/* Inline errors replaced with global notifications */}
                 <Button
                   type="submit"
                   className="w-full"
@@ -129,9 +144,7 @@ export function LoginForm({
                     ? "Sending magic link..."
                     : "Login with magic link"}
                 </Button>
-                {info ? (
-                  <p className="text-sm text-muted-foreground">{info}</p>
-                ) : null}
+                {/* Inline info replaced with global notifications */}
                 <Button
                   type="button"
                   variant="outline"

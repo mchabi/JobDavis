@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNotify } from "@/components/notifications/notifications";
 
 export function ProfileForm({ onDone }: { onDone?: () => void }) {
   const user = useAuthStore((s) => s.user);
   const updateProfile = useAuthStore((s) => s.updateProfile);
+  const notify = useNotify();
   const [firstName, setFirstName] = useState<string>(
     (user?.user_metadata?.first_name as string) || "",
   );
@@ -36,6 +38,7 @@ export function ProfileForm({ onDone }: { onDone?: () => void }) {
     if (!user) return;
     const supabase = getSupabaseClient();
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    // Name image as the user id (single file per user), allow overwrite
     const path = `${user.id}.${ext}`;
     const { error: upErr } = await supabase.storage
       .from("avatars")
@@ -49,7 +52,7 @@ export function ProfileForm({ onDone }: { onDone?: () => void }) {
     }
     const { data } = supabase.storage.from("avatars").getPublicUrl(path);
     const publicUrl = data.publicUrl;
-    setAvatarUrl(publicUrl);
+    setAvatarUrl(`${publicUrl}?t=${Date.now()}`);
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -57,17 +60,26 @@ export function ProfileForm({ onDone }: { onDone?: () => void }) {
     setSaving(true);
     setError(null);
     setMessage(null);
+    const cleanAvatarUrl = avatarUrl ? avatarUrl.split("?")[0] : null;
     const res = await updateProfile({
       firstName: firstName || null,
       lastName: lastName || null,
       fullName: fullName || null,
-      avatarUrl: avatarUrl || null,
+      avatarUrl: cleanAvatarUrl,
     });
     setSaving(false);
     if (!res.ok) {
-      setError(res.error || "Failed to update profile");
+      notify({
+        title: "Update failed",
+        description: res.error || "Please try again.",
+        variant: "error",
+      });
     } else {
-      setMessage("Profile updated");
+      notify({
+        title: "Profile updated",
+        description: "Your changes have been saved.",
+        variant: "success",
+      });
       onDone?.();
     }
   }

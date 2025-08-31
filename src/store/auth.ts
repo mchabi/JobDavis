@@ -11,8 +11,10 @@ export type AuthState = {
   accessToken: string | null;
   isLoading: boolean;
   error: string | null;
+  hydrated: boolean;
   // actions
   setSession: (session: Session | null) => void;
+  setHydrated: (v: boolean) => void;
   signInWithPassword: (
     email: string,
     password: string,
@@ -51,6 +53,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       isLoading: false,
       error: null,
+      hydrated: false,
 
       setSession: (session) => {
         set({
@@ -61,6 +64,7 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
         });
       },
+      setHydrated: (v) => set({ hydrated: v }),
 
       signInWithPassword: async (email, password) => {
         const supabase = getSupabaseClient();

@@ -13,21 +13,19 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getSupabaseClient } from "@/lib/supabaseClient";
+import { useNotify } from "@/components/notifications/notifications";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [msg, setMsg] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const notify = useNotify();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMsg(null);
-    setError(null);
     if (password !== confirm) {
-      setError("Passwords do not match");
+      notify({ title: "Passwords do not match", variant: "error" });
       return;
     }
     setLoading(true);
@@ -35,10 +33,18 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) {
-      setError(error.message);
+      notify({
+        title: "Update failed",
+        description: error.message,
+        variant: "error",
+      });
       return;
     }
-    setMsg("Password updated. Redirecting to login...");
+    notify({
+      title: "Password updated",
+      description: "Redirecting to login...",
+      variant: "success",
+    });
     setTimeout(() => router.replace("/login"), 800);
   }
 
@@ -74,12 +80,6 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setConfirm(e.target.value)}
                 />
               </div>
-              {error ? (
-                <p className="text-sm text-destructive">{error}</p>
-              ) : null}
-              {msg ? (
-                <p className="text-sm text-muted-foreground">{msg}</p>
-              ) : null}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Updating..." : "Update password"}
               </Button>

@@ -4,20 +4,10 @@ import { useAuthStore } from "@/store/auth";
 import * as React from "react";
 import Image from "next/image";
 import {
-  ArrowUpCircleIcon,
   BarChartIcon,
-  CameraIcon,
-  ClipboardListIcon,
-  DatabaseIcon,
-  FileCodeIcon,
-  FileIcon,
-  FileTextIcon,
   FolderIcon,
-  HelpCircleIcon,
   LayoutDashboardIcon,
   ListIcon,
-  SearchIcon,
-  SettingsIcon,
   UsersIcon,
 } from "lucide-react";
 
@@ -44,93 +34,12 @@ const iconMap = {
 } as const;
 
 const data = {
-  navMain: routes.navMain.map((r) => ({
+  navMain: routes.map((r) => ({
+    id: r.id,
     title: r.title,
     url: r.url,
     icon: r.icon ? (iconMap as any)[r.icon] : undefined,
   })),
-  navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: SettingsIcon,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: HelpCircleIcon,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: SearchIcon,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: DatabaseIcon,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: ClipboardListIcon,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: FileIcon,
-    },
-  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -147,7 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const displayName = fullName || email || "User";
   const userForNav = {
     name: displayName,
-    email: email,
+    email,
     avatar: avatarUrl ?? "/logo.svg",
   };
   return (
@@ -157,15 +66,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="bg-red-200 p-10 data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="/">
                 <Image
                   src="/logo.svg"
                   alt="JobDavis"
-                  width={20}
-                  height={20}
-                  className="h-5 w-5"
+                  width={24}
+                  height={24}
+                  className="h-10 w-10"
                 />
                 <span className="text-base font-semibold">JobDavis</span>
               </a>

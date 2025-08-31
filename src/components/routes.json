@@ -1,10 +1,26 @@
-{
-  "navMain": [
-    { "title": "Dashboard", "url": "/dashboard", "icon": "LayoutDashboard" },
-    { "title": "Profile", "url": "/dashboard/profile", "icon": "Users" },
-    { "title": "Lifecycle", "url": "#", "icon": "List" },
-    { "title": "Analytics", "url": "#", "icon": "BarChart" },
-    { "title": "Projects", "url": "#", "icon": "Folder" },
-    { "title": "Team", "url": "#", "icon": "Users" }
-  ]
-}
+[
+  {
+    "id": 1,
+    "title": "Subject1",
+    "url": "/dashboard",
+    "icon": "LayoutDashboard"
+  },
+  {
+    "id": 2,
+    "title": "Subject2",
+    "url": "/dashboard/profile",
+    "icon": "Users"
+  },
+  {
+    "id": 3,
+    "title": "Subject3",
+    "url": "#",
+    "icon": "List"
+  },
+  {
+    "id": 4,
+    "title": "Subject4",
+    "url": "#",
+    "icon": "BarChart"
+  }
+]

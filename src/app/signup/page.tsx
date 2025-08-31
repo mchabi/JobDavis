@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth";
+import { useNotify } from "@/components/notifications/notifications";
 
 export default function SignupPage() {
   const signUpWithPassword = useAuthStore((s) => s.signUpWithPassword);
@@ -24,29 +25,32 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
   const [signupLoading, setSignupLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const notify = useNotify();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    setInfo(null);
     setSignupLoading(true);
     const res = await signUpWithPassword(email, password, {
       firstName: firstName || undefined,
       lastName: lastName || undefined,
-      fullName: firstName + " " + lastName || undefined,
+      fullName: `${firstName} ${lastName}` || undefined,
     });
     setSignupLoading(false);
     if (!res.ok) {
-      setError(res.error ?? "Signup failed");
+      notify({
+        title: "Signup failed",
+        description: res.error ?? "Please try again.",
+        variant: "error",
+      });
       return;
     }
-    setInfo(
-      "Check your email to confirm your account. You can now try logging in.",
-    );
+    notify({
+      title: "Check your email",
+      description: "Confirm your account, then try logging in.",
+      variant: "success",
+    });
     // Optional: redirect to login
     setTimeout(() => router.replace("/login"), 800);
   }
@@ -55,6 +59,7 @@ export default function SignupPage() {
     try {
       setGoogleLoading(true);
       await signInWithGoogle();
+      notify({ title: "Redirecting to Google", variant: "info" });
     } finally {
       setGoogleLoading(false);
     }
@@ -120,12 +125,6 @@ export default function SignupPage() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {error ? (
-                <p className="text-sm text-destructive">{error}</p>
-              ) : null}
-              {info ? (
-                <p className="text-sm text-muted-foreground">{info}</p>
-              ) : null}
               <Button
                 type="submit"
                 disabled={isLoading || signupLoading}

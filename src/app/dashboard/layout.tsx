@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import AuthInit from "@/components/auth-init";
+import Protected from "@/components/protected";
 
 export default function DashboardLayout({
   children,
@@ -11,13 +13,18 @@ export default function DashboardLayout({
   modal: ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        {children}
-      </SidebarInset>
-      {modal}
-    </SidebarProvider>
+    <>
+      <AuthInit />
+      <Protected>
+        <SidebarProvider>
+          <AppSidebar variant="inset" />
+          <SidebarInset>
+            <SiteHeader />
+            {children}
+          </SidebarInset>
+          {modal}
+        </SidebarProvider>
+      </Protected>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth";
 
 export function isAuthenticated<P extends object>(
@@ -20,7 +20,7 @@ export function isAuthenticated<P extends object>(
 
     if (!user && !accessToken) return null; // or show a spinner
 
-    return <Component {...(props as P)} />;
+    return <Component {...props} />;
   }
 
   Guard.displayName = `isAuthenticated(${Component.displayName || Component.name || "Component"})`;
