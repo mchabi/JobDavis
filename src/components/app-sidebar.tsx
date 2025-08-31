@@ -1,6 +1,8 @@
 "use client";
 
+import { useAuthStore } from "@/store/auth";
 import * as React from "react";
+import Image from "next/image";
 import {
   ArrowUpCircleIcon,
   BarChartIcon,
@@ -19,9 +21,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 
-import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -33,39 +33,22 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+import routes from "@/components/routes.json";
+
+const iconMap = {
+  LayoutDashboard: LayoutDashboardIcon,
+  Users: UsersIcon,
+  List: ListIcon,
+  BarChart: BarChartIcon,
+  Folder: FolderIcon,
+} as const;
+
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboardIcon,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: ListIcon,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: BarChartIcon,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: FolderIcon,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: UsersIcon,
-    },
-  ],
+  navMain: routes.navMain.map((r) => ({
+    title: r.title,
+    url: r.url,
+    icon: r.icon ? (iconMap as any)[r.icon] : undefined,
+  })),
   navClouds: [
     {
       title: "Capture",
@@ -151,6 +134,22 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const authUser = useAuthStore((s) => s.user);
+  const fullName =
+    (authUser?.user_metadata?.full_name as string) ||
+    [authUser?.user_metadata?.first_name, authUser?.user_metadata?.last_name]
+      .filter(Boolean)
+      .join(" ");
+  const email = authUser?.email || "";
+  const avatarUrl = (authUser?.user_metadata as any)?.avatar_url as
+    | string
+    | undefined;
+  const displayName = fullName || email || "User";
+  const userForNav = {
+    name: displayName,
+    email: email,
+    avatar: avatarUrl ?? "/logo.svg",
+  };
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -160,9 +159,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
-                <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+              <a href="/">
+                <Image
+                  src="/logo.svg"
+                  alt="JobDavis"
+                  width={20}
+                  height={20}
+                  className="h-5 w-5"
+                />
+                <span className="text-base font-semibold">JobDavis</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -170,11 +175,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userForNav} />
       </SidebarFooter>
     </Sidebar>
   );

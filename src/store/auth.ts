@@ -35,10 +35,11 @@ export type AuthState = {
   ) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => Promise<void>;
   refreshFromSupabase: () => Promise<void>;
-  updateProfile: (names: {
+  updateProfile: (fields: {
     firstName?: string | null;
     lastName?: string | null;
     fullName?: string | null;
+    avatarUrl?: string | null;
   }) => Promise<{ ok: boolean; error?: string }>;
 };
 
@@ -172,6 +173,7 @@ export const useAuthStore = create<AuthState>()(
             first_name: names.firstName ?? null,
             last_name: names.lastName ?? null,
             full_name: names.fullName ?? null,
+            avatar_url: names.avatarUrl ?? undefined,
           },
         });
         if (error) {

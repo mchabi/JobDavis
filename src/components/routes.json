@@ -1,0 +1,10 @@
+{
+  "navMain": [
+    { "title": "Dashboard", "url": "/dashboard", "icon": "LayoutDashboard" },
+    { "title": "Profile", "url": "/dashboard/profile", "icon": "Users" },
+    { "title": "Lifecycle", "url": "#", "icon": "List" },
+    { "title": "Analytics", "url": "#", "icon": "BarChart" },
+    { "title": "Projects", "url": "#", "icon": "Folder" },
+    { "title": "Team", "url": "#", "icon": "Users" }
+  ]
+}
